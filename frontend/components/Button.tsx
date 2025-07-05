@@ -9,8 +9,8 @@ function Button() {
     const setRoom = useSetRecoilState(roomAtom)
     const username = useRecoilValue(usernameAtom)
     return (
-        <div className="flex flex-col justify-center items-center w-[30%] h-auto">
-            <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 text-xl w-[50%]" onClick={async () => {
+        <div className="mt-4 flex flex-col justify-center items-center w-[70%] sm:w-[50%] md:w-[40%] lg:w-[30%] h-auto">
+            <button type="button" className="w-[100%] text-white bg-blue-700 font-medium rounded-lg text-lg md:text-xl xl:text-2xl px-5 py-2.5 me-2 mb-2 hover:bg-blue-800 focus:outline-none focus:ring-blue-300 focus:ring-4" onClick={async () => {
                 const res = await axios.get("http://localhost:8000/roomID")
                 const id = res.data.roomID
                 setRoom(id)
@@ -18,6 +18,8 @@ function Button() {
                     userName: username,
                     roomID: id
                 })
+               
+                    sessionStorage.setItem("ROOM", id)
                 if(res2.data.message === 'FAIL') {
                     toast.error('Database error try again', {
                     position: "top-right",
@@ -36,7 +38,7 @@ function Button() {
 
                 }
             }}>Create Room</button>
-            <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 text-xl w-[50%]" onClick={() => {
+            <button type="button" className="w-[100%] text-white bg-blue-700 font-medium rounded-lg text-lg md:text-xl xl:text-2xl px-5 py-2.5 me-2 mb-2 hover:bg-blue-800 focus:outline-none focus:ring-blue-300 focus:ring-4" onClick={() => {
                 navigate("/room")
             }}>Join Room</button>
             <ToastContainer

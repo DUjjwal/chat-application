@@ -9,7 +9,7 @@ import Chat from "../components/Chat.tsx"
 function App() {
 
   return (
-    <div className='h-screen flex flex-col justify-center items-center gap-y-4 p-2'>
+    <div className='h-screen flex flex-col justify-center items-center gap-y-4 p-2 overflow-hidden'>
       <Header/>
       <div className="w-full h-[90%] flex flex-col items-center">
         <BrowserRouter>

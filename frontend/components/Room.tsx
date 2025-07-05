@@ -1,7 +1,7 @@
 import { useRecoilState, useRecoilValue } from "recoil"
 import InputBox from "../components/InputBox.tsx"
 import { roomAtom, usernameAtom } from "../atoms/atoms.ts"
-import type { ChangeEvent } from "react"
+import { useEffect, useState, type ChangeEvent } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router"
 import {ToastContainer, Bounce, toast} from "react-toastify";
@@ -10,6 +10,23 @@ function User() {
     const [room, setRoom] = useRecoilState(roomAtom)
     const username= useRecoilValue(usernameAtom)
     const navigate = useNavigate()
+    const [flag, setFlag] = useState(false)
+    useEffect(() => {
+        const user = sessionStorage.getItem("USER")
+        if(user === null)
+            setFlag(true)
+            console.log(user, flag)
+    }, [])
+
+    if(flag === true) {
+        setTimeout(() => {
+            navigate("/user")
+        }, 2000)
+        return (
+            <div className="text-center">Please enter username first Redirecting to main page</div>
+            
+        )
+    }
     return (
         <div className="flex flex-col justify-content items-center w-[30%] h-auto">
             <InputBox title="Enter Room ID" onChange={(e: ChangeEvent<HTMLInputElement>) => {setRoom(e.target.value)} } onKeyDown={async (e) => {
@@ -32,6 +49,8 @@ function User() {
                         });
                     }
                     else {
+                        sessionStorage.setItem("ROOM", room)
+                        sessionStorage.removeItem("MESSAGE")
                         navigate("/chat")
                     }
                 }

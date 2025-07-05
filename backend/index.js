@@ -69,13 +69,13 @@ const io = new Server(server, {
 //user will always receive userName, roomID, text, alert from server
 io.on('connection', (socket) => {
     socket.on("join-room", (obj) => {
-        console.log("someone joined the room")
         socket.join(obj.roomID)
         io.to(obj.roomID).emit(obj.roomID, {
             userName: obj.userName,
             roomID: obj.roomID,
             alert: true,
-            text: `${obj.userName} entered the room`
+            text: `${obj.userName} entered the room`,
+            date: new Date().toLocaleString('en-US',{hour: '2-digit', minute:'2-digit'})
         })
     })
     socket.on("room-message", (obj) => {
@@ -83,7 +83,8 @@ io.on('connection', (socket) => {
             userName: obj.userName,
             roomID: obj.roomID,
             alert: false,
-            text: obj.text
+            text: obj.text,
+            date: new Date().toLocaleString('en-US',{hour: '2-digit', minute:'2-digit'})
         })
     })
 })
