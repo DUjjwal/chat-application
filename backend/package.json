@@ -1,12 +1,10 @@
 {
-  "name": "backend",
+  "name": "sockettalk-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
@@ -18,10 +16,7 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "mongoose": "^8.16.0",
-    "nodemon": "^3.1.10",
-    "react-toastify": "^11.0.5",
     "short-unique-id": "^5.3.2",
-    "socket-io": "^1.0.0",
     "socket.io": "^4.8.1"
   }
 }
