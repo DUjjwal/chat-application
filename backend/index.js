@@ -51,7 +51,7 @@ app.delete("/delete", async (req, res) => {
 })
 
 
-const server = app.listen(8000, ()=> {
+const server = app.listen(process.env.PORT, ()=> {
     console.log(`Server is listening at port 8000`)
 })
 
