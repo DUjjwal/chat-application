@@ -19,7 +19,7 @@ function App() {
             <Route path="/user" element={<User />} />
             <Route path="/button" element={<Button2 />} />
             <Route path="/room" element={<Room />} />
-            <Route path="/chat" element={<Chat id="room-id"/>} />
+            <Route path="/chat" element={<Chat/>} />
             
           </Routes>
           

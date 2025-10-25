@@ -15,7 +15,7 @@ function User() {
                 setUsername(e.target.value)
             }} onKeyDown={async (e) => {
                 if(e.key === "Enter") {
-                    const res = await axios.post('http://localhost:8000/verify/user', {
+                    const res = await axios.post(`${import.meta.env.VITE_URL}/verify/user`, {
                         userName: username
                     })
                     console.log(res.data.userExist)
@@ -34,7 +34,7 @@ function User() {
                         setUsername("");
                     }
                     else {
-                        sessionStorage.setItem("USER", username)
+                        sessionStorage.setItem("USER", username ?? "")
                         sessionStorage.removeItem("ROOM")
                         sessionStorage.removeItem("MESSAGES")
                         navigate("/button")
@@ -42,7 +42,7 @@ function User() {
                 }
             }}/>
             <button type="button" className="w-[100%] text-white bg-blue-700 font-medium rounded-lg text-lg md:text-xl xl:text-2xl px-5 py-2.5 me-2 mb-2 hover:bg-blue-800 focus:outline-none focus:ring-blue-300 focus:ring-4 " onClick={async () => {
-                const res = await axios.post('http://localhost:8000/verify/user', {
+                const res = await axios.post(`${import.meta.env.VITE_URL}/verify/user`, {
                     userName: username
                 })
                 
@@ -62,7 +62,7 @@ function User() {
                 }
                 else {
                     
-                    sessionStorage.setItem("USER", username)
+                    sessionStorage.setItem("USER", username ?? "")
                     sessionStorage.removeItem("ROOM")
                     sessionStorage.removeItem("MESSAGES")
                     navigate("/button")

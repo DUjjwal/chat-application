@@ -45,14 +45,19 @@ app.get('/roomID', (req, res) => {
     })
 })
 
+app.get("/", (req, res) => {
+    res.status(200).send("hi")
+})
+
 app.delete("/delete", async (req, res) => {
     const {userName} = req.body
     await User.deleteOne({userName})
+    return res.status(200).send('ok')
 })
 
-
-const server = app.listen(process.env.PORT, ()=> {
-    console.log(`Server is listening at port 8000`)
+const PORT = process.env.PORT || 8000
+const server = app.listen(process.env.PORT || 8000, ()=> {
+    console.log(`Server is listening at port ${PORT}`)
 })
 
 

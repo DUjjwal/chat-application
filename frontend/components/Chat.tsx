@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { messageAtom, roomAtom, usernameAtom } from "../atoms/atoms";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import type { DefaultEventsMap } from "@socket.io/component-emitter";
+
 import { io, Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
@@ -25,23 +26,29 @@ function Chat() {
     const [flag, setFlag] = useState(false)
     
     
-    
-
-
     useEffect(() => {
-        if(sessionStorage.getItem("ROOM")===null || sessionStorage.getItem("USER")===null) {
+        const roomVal = sessionStorage.getItem("ROOM")
+        const userVal = sessionStorage.getItem("USER")
+        if(!userVal || !roomVal) {
             setFlag(true)
             return;
         }
 
-        setRoom(sessionStorage.getItem("ROOM"))
-        setButtonTxt(`Room ID:${sessionStorage.getItem("ROOM")}`)
-        setUsername(sessionStorage.getItem("USER"))
+        setRoom(roomVal)
+        setButtonTxt(`Room ID:${roomVal}`)
+        setUsername(userVal)
+
         const msg = sessionStorage.getItem("MESSAGES")
         setMessages(msg==null?[]:JSON.parse(msg))
+    }, [])
 
-        socketRef.current = io("http://localhost:8000")
+
+    useEffect(() => {
+
+        
         if(!room || !username)return;
+
+        socketRef.current = io("https://ujjwalcheck-bxdheaa4b3beg5ed.centralindia-01.azurewebsites.net/")
         socketRef.current.on("connect", () => {
             console.log("connected")
             socketRef.current?.emit("join-room", {
@@ -50,10 +57,16 @@ function Chat() {
             })
         })
 
-        socketRef.current.on(room, (msg) => {
-            console.log(msg)
+        socketRef.current.on(room ?? "", (msg: {
+            userName: string,
+            roomID: string,
+            alert: boolean,
+            text: string,
+            date: string
+        }) => {
+            msg.date = new Date().toLocaleString('en-US',{hour: '2-digit', minute:'2-digit'})
             setMessages(prev => {
-                const updatedMessages = [...prev, msg]
+                const updatedMessages = [...(prev ?? []), msg]
                 sessionStorage.setItem("MESSAGES", JSON.stringify(updatedMessages))
                 return updatedMessages
             })
@@ -65,7 +78,7 @@ function Chat() {
         return () => {
             // socketRef.current?.off(room, () => {})
             const deleteRequest = async () => {
-                await axios.delete("http://localhost:8000/delete", {
+                await axios.delete(`${import.meta.env.VITE_URL}/delete`, {
                    data: {
                     userName: username
                    }
@@ -74,12 +87,12 @@ function Chat() {
             deleteRequest()
         }
 
-    }, [])
+    }, [room, username])
     
     useEffect(() => {
         const handleUnload = () => {
-            socketRef.current?.off(room, () => {})
-            fetch("http://localhost:8000/delete", {
+            socketRef.current?.off(room ?? "", () => {})
+            fetch("https://ujjwalcheck-bxdheaa4b3beg5ed.centralindia-01.azurewebsites.net/delete", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -118,12 +131,12 @@ function Chat() {
         <>
         <div className="sm:mt-4 h-full flex flex-col gap-y-2 w-full items-center pb-5">
             <button className="text-xs w-auto sm:text-base md:text-lg lg:text-xl px-2 py-1 rounded-lg flex justify-center items-center sm:fixed sm:top-1 sm:left-1 mb-3 text-gray-500 shadow " onMouseEnter={() => setButtonTxt("Copy")} onMouseLeave={() => setButtonTxt(`Room ID:${room}`)} onClick={() => {
-                navigator.clipboard.writeText(room)
+                navigator.clipboard.writeText(room ?? "")
                 setButtonTxt("Copied")
             }}>{buttonTxt}</button>
             <div className="scroll-smooth w-[100%] h-[90%] text-xl overflow-y-scroll flex flex-col gap-y-2" ref={ref}>
-                {messages.map((msg) => (
-                    <Message title={msg.text} user={msg.userName} alert={msg.alert} myuser={username} date={msg.date} />
+                {messages?.map((msg) => (
+                    <Message title={msg.text} user={msg.userName} alert={msg.alert} myuser={username ?? ""} date={msg.date} />
                 ))}
                 {/* <Message title="hello" user="abc" alert="true" myuser={username}/>
                 <Message title="helloawd awda wd awda wd awd a" user="abc" myuser="abc" date="12:44"/>
@@ -132,7 +145,7 @@ function Chat() {
             </div>  
             <div className="h-[10%] outline outline-blue-900 rounded-xl shadow flex w-[100%]">
                 <input type="text" placeholder="Type a message" className='text-base md:text-lg xl:text-xl outline-gray-500 rounded-xl w-[100%] active:outline outline-white p-2' onChange={(e) => setText(e.target.value)} onKeyDown={(e) => {
-                    if(e.key === "Enter") {
+                    if(e.key === "Enter" && text!=="") {
                         socketRef.current?.emit("room-message", {
                             userName: username,
                             roomID: room,
@@ -142,6 +155,7 @@ function Chat() {
                     }
                 }} value={text}/>
                 <button className="flex justify-center items-center text-sm md:text-xl xl:text-xl w-[10%] bg-blue-500 rounded-r-xl text-white p-2 flex justify-center" onClick={() => {
+                    if(text==="")return;
                     socketRef.current?.emit("room-message", {
                         userName: username,
                         roomID: room,
